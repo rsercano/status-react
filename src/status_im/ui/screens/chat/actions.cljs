@@ -48,7 +48,7 @@
 
 (defn- group-chat-actions [chat-id]
   [(when-not platform/desktop?
-    view-my-wallet)
+     view-my-wallet)
    (group-info chat-id)
    (clear-history)
    (fetch-history chat-id)
@@ -56,7 +56,7 @@
 
 (defn- public-chat-actions [chat-id]
   [(when-not platform/desktop?
-    view-my-wallet)
+     view-my-wallet)
    (share-chat chat-id)
    (clear-history)
    (fetch-history chat-id)

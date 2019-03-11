@@ -2,13 +2,13 @@
   (:require [status-im.react-native.js-dependencies :as js-dependencies]))
 
 (def navigation-actions
-    (.-NavigationActions js-dependencies/react-navigation))
+  (.-NavigationActions js-dependencies/react-navigation))
 
 (def navigation-events
   (.-NavigationEvents js-dependencies/react-navigation))
 
 (def stack-actions
-    (.-StackActions js-dependencies/react-navigation))
+  (.-StackActions js-dependencies/react-navigation))
 
 (def navigator-ref (atom nil))
 
