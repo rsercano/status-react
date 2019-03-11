@@ -2,7 +2,8 @@
   (:require [re-frame.core :as re-frame]
             [status-im.i18n :as i18n]
             [status-im.ui.components.list-selection :as list-selection]
-            [status-im.utils.universal-links.core :as universal-links]))
+            [status-im.utils.universal-links.core :as universal-links]
+            [status-im.utils.platform :as platform]))
 
 (def view-my-wallet
   {:label  (i18n/label :t/view-my-wallet)
@@ -38,21 +39,24 @@
                                 chat-id])})
 
 (defn- chat-actions [chat-id]
-  [view-my-wallet
+  [(when-not platform/desktop?
+     view-my-wallet)
    (view-profile chat-id)
    (clear-history)
    (fetch-history chat-id)
    (delete-chat chat-id false)])
 
 (defn- group-chat-actions [chat-id]
-  [view-my-wallet
+  [(when-not platform/desktop?
+    view-my-wallet)
    (group-info chat-id)
    (clear-history)
    (fetch-history chat-id)
    (delete-chat chat-id true)])
 
 (defn- public-chat-actions [chat-id]
-  [view-my-wallet
+  [(when-not platform/desktop?
+    view-my-wallet)
    (share-chat chat-id)
    (clear-history)
    (fetch-history chat-id)
