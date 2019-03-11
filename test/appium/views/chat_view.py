@@ -205,6 +205,18 @@ class JoinChatButton(BaseButton):
         super(JoinChatButton, self).__init__(driver)
         self.locator = self.Locator.text_part_selector('JOIN GROUP')
 
+class DeclineChatButton(BaseButton):
+    def __init__(self, driver):
+        super(DeclineChatButton, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('Decline invitation')
+
+
+class ChatElementByTextPart(BaseText):
+    def __init__(self, driver, text):
+        super(ChatElementByTextPart, self).__init__(driver)
+        self.message_text = text
+        self.locator = self.Locator.xpath_selector(
+            "//*[contains(@text,'%s')]/ancestor::android.view.ViewGroup[@content-desc='chat-item']" % text)
 
 class ChatElementByText(BaseText):
     def __init__(self, driver, text):
@@ -319,6 +331,7 @@ class ChatView(BaseView):
         self.leave_chat_button = LeaveChatButton(self.driver)
         self.leave_button = LeaveButton(self.driver)
         self.join_chat_button = JoinChatButton(self.driver)
+        self.decline_invitation_button = DeclineChatButton(self.driver)
 
         self.chat_settings = ChatSettings(self.driver)
         self.view_profile_button = ViewProfileButton(self.driver)
@@ -446,6 +459,10 @@ class ChatView(BaseView):
     def chat_element_by_text(self, text):
         self.driver.info("Looking for a message by text: '%s'" % text)
         return ChatElementByText(self.driver, text)
+
+    def chat_element_by_text_part(self, text):
+        self.driver.info("Looking for a message that contains text: '%s'" % text)
+        return ChatElementByTextPart(self.driver, text)
 
     def verify_message_is_under_today_text(self, text, errors):
         message_element = self.chat_element_by_text(text)

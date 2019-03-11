@@ -97,6 +97,12 @@ class ChatUrlText(BaseText):
         super(ChatUrlText, self).__init__(driver)
         self.locator = self.Locator.accessibility_id('chat-url-text')
 
+class EmptyHomeScreen(BaseText):
+    def __init__(self, driver):
+        super(EmptyHomeScreen, self).__init__(driver)
+        self.locator = self.Locator.text_part_selector('Your Home screen will house your recent chats')
+
+
 
 class HomeView(BaseView):
     def __init__(self, driver):
@@ -105,6 +111,7 @@ class HomeView(BaseView):
         self.plus_button = PlusButton(self.driver)
         self.chat_name_text = ChatNameText(self.driver)
         self.chat_url_text = ChatUrlText(self.driver)
+        self.empty_home_screen_label = EmptyHomeScreen(self.driver)
 
     def wait_for_syncing_complete(self):
         self.driver.info('Waiting for syncing complete:')
@@ -174,3 +181,7 @@ class HomeView(BaseView):
             else:
                 status_test_dapp.deny_button.click()
         return status_test_dapp
+
+    def check_empty_home_view(self):
+        if self.empty_home_screen_label.is_element_displayed():
+            return True
