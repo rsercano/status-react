@@ -10,27 +10,30 @@
             [status-im.ui.screens.wallet.main.views :as wallet.main]
             [status-im.ui.screens.main-tabs.styles :as styles]
             [status-im.ui.screens.profile.user.views :as profile.user]
-            [status-im.ui.components.common.common :as components.common]))
+            [status-im.ui.components.common.common :as components.common]
+            [status-im.utils.platform :as platform]))
 
 (def tabs-list-data
-  [{:view-id             :home
-    :content             {:title         (i18n/label :t/home)
-                          :icon-inactive :icons/home
-                          :icon-active   :icons/home-active}
-    :count-subscription  :chats/unread-messages-number
-    :accessibility-label :home-tab-button}
-   {:view-id             :wallet
-    :content             {:title         (i18n/label :t/wallet)
-                          :icon-inactive :icons/wallet
-                          :icon-active   :icons/wallet-active}
-    :count-subscription  :get-wallet-unread-messages-number
-    :accessibility-label :wallet-tab-button}
-   {:view-id             :my-profile
-    :content             {:title         (i18n/label :t/profile)
-                          :icon-inactive :icons/profile
-                          :icon-active   :icons/profile-active}
-    :count-subscription  :get-profile-unread-messages-number
-    :accessibility-label :profile-tab-button}])
+  (->> [{:view-id             :home
+         :content             {:title         (i18n/label :t/home)
+                               :icon-inactive :icons/home
+                               :icon-active   :icons/home-active}
+         :count-subscription  :chats/unread-messages-number
+         :accessibility-label :home-tab-button}
+        (when-not platform/desktop?
+          {:view-id             :wallet
+           :content             {:title         (i18n/label :t/wallet)
+                                 :icon-inactive :icons/wallet
+                                 :icon-active   :icons/wallet-active}
+           :count-subscription  :get-wallet-unread-messages-number
+           :accessibility-label :wallet-tab-button})
+        {:view-id             :my-profile
+         :content             {:title         (i18n/label :t/profile)
+                               :icon-inactive :icons/profile
+                               :icon-active   :icons/profile-active}
+         :count-subscription  :get-profile-unread-messages-number
+         :accessibility-label :profile-tab-button}]
+       (remove nil?)))
 
 (defn- tab-content [{:keys [title icon-active icon-inactive]}]
   (fn [active? count]
