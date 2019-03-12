@@ -194,7 +194,7 @@
                #(when send-command?
                   (commands-sending/send % chat-id send-command? params))
                (navigation/navigate-to-clean
-                (if (= (:view-id db) :wallet-send-transaction)
+                (if (contains? #{:wallet-send-transaction :enter-pin :hardwallet-connect} (:view-id db))
                   :wallet-transaction-sent
                   :wallet-transaction-sent-modal)
                 {})))))
@@ -303,3 +303,37 @@
              {:dispatch-later [{:ms 400 :dispatch [:check-dapps-transactions-queue]}]}
              (navigation/navigate-back))))
 
+(re-frame/reg-fx
+ ::hash-transaction
+ (fn [{:keys [transaction all-tokens symbol chain on-completed]}]
+   (status/hash-transaction (types/clj->json transaction) on-completed)))
+
+(defn send-keycard-transaction
+  [{{:keys [chain] :as db} :db}]
+  (let [{:keys [symbol] :as transaction} (get-in db [:wallet :send-transaction])
+        all-tokens (:wallet/all-tokens db)
+        from (get-in db [:account/account :address])]
+    {::hash-transaction {:transaction  (models.wallet/prepare-send-transaction from transaction)
+                         :all-tokens   all-tokens
+                         :symbol       symbol
+                         :chain        chain
+                         :on-completed #(re-frame/dispatch [:wallet.callback/hash-transaction-completed %])}}))
+
+(handlers/register-handler-fx
+ :wallet.callback/hash-transaction-completed
+ (fn [{:keys [db] :as cofx} [_ result]]
+   (let [{:keys [transaction hash]} (:result (types/json->clj result))]
+     (fx/merge cofx
+               {:db (-> db
+                        (assoc-in [:hardwallet :pin :enter-step] :sign)
+                        (assoc-in [:hardwallet :transaction] transaction)
+                        (assoc-in [:hardwallet :tx-hash] hash))}
+               (navigation/navigate-to-cofx :enter-pin nil)))))
+
+(handlers/register-handler-fx
+ :wallet.ui/sign-transaction-button-clicked
+ (fn [{:keys [db] :as cofx} _]
+   (let [keycard-account? (boolean (get-in db [:account/account :keycard-instance-uid]))]
+     (if keycard-account?
+       (send-keycard-transaction cofx)
+       {:db (assoc-in db [:wallet :send-transaction :show-password-input?] true)}))))
