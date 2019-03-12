@@ -438,6 +438,9 @@ class BaseView(object):
     def swipe_down(self):
         self.driver.swipe(500, 500, 500, 1000)
 
+    def swipe_left(self, y=1700):
+        self.driver.swipe(1000, y, 100, y)
+
     def get_home_view(self):
         from views.home_view import HomeView
         return HomeView(self.driver)
