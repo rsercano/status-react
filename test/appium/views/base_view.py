@@ -261,6 +261,18 @@ class AssetButton(BaseButton):
         self.driver.info('Tap on %s' % self.name)
 
 
+class OpenInStatusFromExternalBrowserButton(BaseButton):
+    def __init__(self, driver):
+        super(OpenInStatusFromExternalBrowserButton, self).__init__(driver)
+        self.locator = self.Locator.xpath_selector('//*[@text="Open in Status"] | //*[@content-desc="Open in Status"]')
+
+    def click(self):
+        for _ in range(5):
+            self.driver.swipe(500, 1000, 500, 500)
+        self.driver.info('Tap on %s' % self.name)
+        self.wait_for_visibility_of_element().click()
+
+
 class BaseView(object):
     def __init__(self, driver):
         self.driver = driver
@@ -287,6 +299,7 @@ class BaseView(object):
         self.connection_status = ConnectionStatusText(self.driver)
         self.cross_icon = CrossIcon(self.driver)
         self.show_roots_button = ShowRoots(self.driver)
+        self.open_in_status_from_external_browser_button = OpenInStatusFromExternalBrowserButton(self.driver)
 
         self.apps_button = AppsButton(self.driver)
         self.status_app_icon = StatusAppIcon(self.driver)
