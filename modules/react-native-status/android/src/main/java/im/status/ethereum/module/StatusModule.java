@@ -90,12 +90,25 @@ class StatusModule extends ReactContextBaseJavaModule implements LifecycleEventL
     }
 
     private boolean checkAvailability() {
+      // We wait at least 10s for getCurrentActivity to return a value,
+      // otherwise we give up
+      for (int attempts = 0; attempts < 100; attempts++) {
         if (getCurrentActivity() != null) {
-            return true;
+          return true;
         }
+        try {
+          Thread.sleep(100);
+        } catch (InterruptedException ex) {
+          if (getCurrentActivity() != null) {
+            return true;
+          }
+          Log.d(TAG, "Activity doesn't exist");
+          return false;
+        }
+      }
 
-        Log.d(TAG, "Activity doesn't exist");
-        return false;
+      Log.d(TAG, "Activity doesn't exist");
+      return false;
 
     }
 
